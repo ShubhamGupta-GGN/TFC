@@ -1,198 +1,166 @@
 
-import os
-from io import BytesIO
-import pandas as pd
-import requests
 import streamlit as st
+import pandas as pd
 import plotly.express as px
+import requests
+from io import BytesIO
 
-st.set_page_config(page_title="TFC KPI Dashboard", layout="wide")
+st.set_page_config(page_title="The Fresh Connection Dashboard", layout="wide")
 
-# ------------------ Helpers ------------------ #
-@st.cache_data(show_spinner="📊 Loading Excel ...")
-def load_excel(source: str) -> dict:
-    """Return dict of DataFrames keyed by sheet name."""
-    if source.startswith(("http://", "https://")):
-        try:
-            r = requests.get(source, timeout=15)
+# ---------- Helper functions ----------
+def load_excel(source: str) -> dict[str, pd.DataFrame]:
+    """Load an Excel from local path or raw‑GitHub URL and return a dict of DataFrames."""
+    try:
+        if source.startswith(("http://", "https://")):
+            r = requests.get(source, timeout=10)
             r.raise_for_status()
-            return pd.read_excel(BytesIO(r.content), sheet_name=None)
-        except requests.exceptions.RequestException as e:
-            st.error(f"❌ Could not download file. Details: {e}")
-            st.stop()
-    else:
-        if not os.path.exists(source):
-            st.error(f"❌ File not found: {source}")
-            st.stop()
-        return pd.read_excel(source, sheet_name=None)
-
-def _extract_financial(fin_raw: pd.DataFrame) -> pd.DataFrame:
-    """Tidy the messy 'finance report' sheet into Round‑Metric columns."""
-    # Work on a copy to avoid SettingWithCopy warnings
-    df0 = fin_raw.copy()
-    # first numeric row (index 1) holds column labels 0..6
-    col_labels = ['Metric'] + df0.iloc[1,1:].tolist()
-    df = df0.iloc[2:].reset_index(drop=True)
-    df.columns = col_labels
-    # mapping aggregated metrics to simple names
-    regex_map = {
-        'ROI': r'^ROI$',
-        'Realized Revenues': r'^Realized revenue$',
-        'COGS': r'Gross margin - Cost of goods sold$',
-        'Indirect Cost': r'Operating profit - Indirect cost$'
-    }
-    frames = []
-    for nice, regex in regex_map.items():
-        row = df[df['Metric'].str.match(regex, case=False, na=False)]
-        if not row.empty:
-            ser = row.iloc[0].drop('Metric').rename(nice).reset_index()
-            ser.columns = ['Round', nice]
-            frames.append(ser)
-    if not frames:
-        st.error("❌ Could not locate core financial KPIs in finance sheet.")
+            return pd.read_excel(BytesIO(r.content), sheet_name=None, engine="openpyxl")
+        else:
+            return pd.read_excel(source, sheet_name=None, engine="openpyxl")
+    except Exception as e:
+        st.error(
+            "❌ Could not load the Excel file. "
+            "Check that the path or URL is correct and publicly accessible.\n\n"
+            f"Details: {e}"
+        )
         st.stop()
-    fin_df = frames[0]
-    for fr in frames[1:]:
-        fin_df = fin_df.merge(fr, on='Round', how='outer')
-    # ensure numeric and int round
-    fin_df['Round'] = fin_df['Round'].astype(int)
-    for col in fin_df.columns[1:]:
-        fin_df[col] = pd.to_numeric(fin_df[col], errors='coerce')
-    return fin_df
 
-def attach_financial(df: pd.DataFrame, fin_df: pd.DataFrame) -> pd.DataFrame:
-    return df.merge(fin_df, on='Round', how='left')
+def clean_labels(col: str) -> str:
+    """Strip whitespace, lower, and normalise finance labels."""
+    mapping = {
+        "realized revenue": "Realized Revenues",
+        "realised revenues": "Realized Revenues",
+        "roi": "ROI",
+        "cost of goods sold": "COGS",
+        "cogs": "COGS",
+        "indirect cost": "Indirect Cost",
+    }
+    c = col.strip()
+    key = c.lower()
+    return mapping.get(key, c)
 
-def kpi_options(df: pd.DataFrame, candidate_cols: list[str]) -> list[str]:
-    """Return only the candidate columns that exist in df."""
-    return [c for c in candidate_cols if c in df.columns]
+def to_numeric(series: pd.Series) -> pd.Series:
+    """Convert strings like '45%' or '1,234' to float."""
+    return (
+        pd.to_numeric(
+            series.astype(str)
+            .str.replace('%', '', regex=False)
+            .str.replace(',', '', regex=False)
+            .str.strip(),
+            errors='coerce'
+        )
+    )
 
-# ------------------ Sidebar ------------------ #
-st.sidebar.markdown("### Data source")
+def safe_scatter(df: pd.DataFrame, x_col: str, y_col: str, color: str|None, hover: list[str]|None, title: str):
+    """Plot scatter only if both columns exist and have numeric data."""
+    missing = [c for c in [x_col, y_col] if c not in df.columns]
+    if missing:
+        st.warning(f"Columns not found in data: {', '.join(missing)}")
+        return
+    plot_df = df.copy()
+    plot_df[x_col] = to_numeric(plot_df[x_col])
+    plot_df[y_col] = to_numeric(plot_df[y_col])
+    plot_df = plot_df.dropna(subset=[x_col, y_col])
+    if plot_df.empty:
+        st.warning("No numeric data available for this selection.")
+        return
+    fig = px.scatter(
+        plot_df, x=x_col, y=y_col, color=color, hover_data=hover,
+        title=title, template="plotly_white"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+# ---------- Sidebar ----------
+st.sidebar.header("Data source")
 default_path = "TFC_0_6.xlsx"
 data_source = st.sidebar.text_input(
-    "Excel file path or *raw* GitHub URL",
-    value=default_path,
-    help="""Put your data file next to *streamlit_app.py* in the GitHub repo
-    and leave this as `TFC_0_6.xlsx`, or paste a raw‑GitHub link."""
+    "Local file name **or** raw‑GitHub URL of your Excel export:",
+    value=default_path
 )
 
 sheets = load_excel(data_source)
 
-# Build financial DF
-if 'finance report' not in sheets:
-    st.error("❌ Sheet 'finance report' not found in workbook.")
+# ---------- Finance metrics ----------
+finance_sheet = None
+for name in sheets:
+    if "finance" in name.lower():
+        finance_sheet = sheets[name]
+        break
+if finance_sheet is None:
+    st.error("No sheet containing 'finance' found in the workbook.")
     st.stop()
-fin_df = _extract_financial(sheets['finance report'])
 
-# Core functional sheets
-component_df = sheets.get('Component', pd.DataFrame())
-supplier_df  = sheets.get('Supplier', pd.DataFrame())
-product_df   = sheets.get('Product', pd.DataFrame())
-warehouse_df = sheets.get('Warehouse, Salesarea', pd.DataFrame())
+fin_df = finance_sheet.copy()
+fin_df.columns = [clean_labels(c) for c in fin_df.columns]
+# Expecting a column 'Round' to join on. If not, reset index.
+if 'Round' not in fin_df.columns:
+    fin_df = fin_df.rename(columns={fin_df.columns[0]: 'Round'})
+# Keep only the four KPI cols plus round
+keep_cols = ['Round', 'ROI', 'Realized Revenues', 'COGS', 'Indirect Cost']
+fin_df = fin_df[[c for c in keep_cols if c in fin_df.columns]].copy()
+for col in keep_cols[1:]:
+    if col in fin_df.columns:
+        fin_df[col] = to_numeric(fin_df[col])
 
-# Derived columns
-if not component_df.empty:
-    component_df['Raw Material Cost %'] = (
-        component_df['Purchase value previous round'] /
-        component_df.merge(fin_df, on='Round', how='left')['Realized Revenues'] * 100
-    )
-if not product_df.empty and 'Economic inventory (weeks)' in product_df.columns:
-    product_df['Attained Shelf Life (weeks)'] = product_df['Economic inventory (weeks)']
+# ---------- Tab builder ----------
+def build_tab(tab_name: str, sheet_keywords: list[str], id_col: str, default_metrics: list[str]):
+    with st.expander(f"ℹ️ About this tab", expanded=False):
+        st.markdown(f"This view links **{tab_name} functional KPIs** with **financial results**.")
+    # Find matching sheet
+    target_sheet = None
+    for name in sheets:
+        if any(k in name.lower() for k in sheet_keywords):
+            target_sheet = sheets[name]
+            break
+    if target_sheet is None:
+        st.warning(f"No worksheet matched keywords {sheet_keywords}.")
+        return
+    df = target_sheet.copy()
+    if 'Round' not in df.columns:
+        df = df.rename(columns={df.columns[0]: 'Round'})
+    # Merge finance
+    merged = pd.merge(df, fin_df, on='Round', how='left')
+    numeric_cols = [c for c in merged.columns if merged[c].dtype != 'object' and c not in ['Round']]
+    # Interface
+    metric = st.selectbox("Functional KPI (x‑axis)", options=[c for c in numeric_cols if c not in keep_cols], index=0)
+    fin_kpi = st.selectbox("Financial KPI (y‑axis)", options=[c for c in keep_cols if c != 'Round' and c in merged.columns], index=0)
+    safe_scatter(merged, metric, fin_kpi, color=id_col if id_col in merged.columns else None, hover=['Round'], title=f"{metric} vs {fin_kpi}")
+    st.dataframe(merged.head(30))
 
-# ------------------ Tabs ------------------ #
-tab_purchase, tab_sales, tab_sc, tab_ops = st.tabs(
-    ["Purchase", "Sales", "Supply Chain", "Operations"])
+# ---------- Dashboard ----------
+st.title("📊 The Fresh Connection – KPI Impact Dashboard")
+tab_purchase, tab_sales, tab_supply, tab_ops = st.tabs(["Purchase", "Sales", "Supply Chain", "Operations"])
 
-# ---- Purchase Tab ---- #
 with tab_purchase:
-    if component_df.empty:
-        st.warning("Sheet 'Component' not found.")
-    else:
-        st.header("Purchase KPIs vs Financial Impact")
-        df = attach_financial(component_df, fin_df)
-        kpis = kpi_options(df, [
-            'Delivery reliability (%)',
-            'Rejection (%)',
-            'Obsoletes (%)',
-            'Raw Material Cost %'
-        ])
-        fin_kpi = st.selectbox("Pick financial KPI", ['ROI','Realized Revenues','COGS','Indirect Cost'])
-        metric = st.selectbox("Pick Purchase KPI", kpis)
-        fig = px.scatter(
-            df, x=metric, y=fin_kpi,
-            color='Component', hover_data=['Round'],
-            title=f"{metric} vs {fin_kpi}")
-        st.plotly_chart(fig, use_container_width=True)
-        st.dataframe(df[[ 'Component', 'Round', metric, fin_kpi ]])
+    build_tab(
+        tab_name="Purchase",
+        sheet_keywords=["component", "purchase"],
+        id_col="Component",
+        default_metrics=["Component Delivery Reliability", "Component Rejection percentage", "Component Obsolete percentage", "Raw Material Cost %"]
+    )
 
-# ---- Sales Tab ---- #
 with tab_sales:
-    if product_df.empty:
-        st.warning("Sheet 'Product' not found.")
-    else:
-        st.header("Sales KPIs vs Financial Impact")
-        df = attach_financial(product_df, fin_df)
-        sales_metrics = kpi_options(df, [
-            'Attained Shelf Life (weeks)',
-            'Service level (pieces)',
-            'Forecast error (MAPE)',
-            'Obsoletes (%)'
-        ])
-        fin_kpi = st.selectbox("Financial KPI", ['ROI','Realized Revenues','COGS','Indirect Cost'], key='sales_fin')
-        metric = st.selectbox("Sales KPI", sales_metrics, key='sales_fun')
-        fig = px.scatter(
-            df, x=metric, y=fin_kpi,
-            color='Product', hover_data=['Round'],
-            title=f"{metric} vs {fin_kpi}")
-        st.plotly_chart(fig, use_container_width=True)
-        st.dataframe(df[['Product','Round',metric,fin_kpi]])
+    build_tab(
+        tab_name="Sales",
+        sheet_keywords=["product", "sales"],
+        id_col="Customer" if any("customer" in s.lower() for s in sheets) else "Product",
+        default_metrics=["Product Average Attained Shelf Life", "Product Average Achieved Service Level", "Product Average Forecasting Error", "Product Obsolescence percent"]
+    )
 
-# ---- Supply Chain Tab ---- #
-with tab_sc:
-    st.header("Supply Chain KPIs vs Financial Impact")
-    if component_df.empty or product_df.empty:
-        st.warning("Component/Product sheets missing.")
-    else:
-        # merge component availability & product availability proxies
-        comp_kpi = attach_financial(component_df[['Component','Round','Component availability (%)']], fin_df)
-        prod_kpi = attach_financial(product_df[['Product','Round','Service level (pieces)']].rename(columns={'Service level (pieces)': 'Product availability (%)'}), fin_df)
-        st.subheader("Component availability")
-        fin_kpi = st.selectbox("Financial KPI", ['ROI','Realized Revenues'], key='sc_fin1')
-        fig1 = px.scatter(comp_kpi, x='Component availability (%)', y=fin_kpi,
-                          color='Component', hover_data=['Round'],
-                          title=f"Component availability vs {fin_kpi}")
-        st.plotly_chart(fig1, use_container_width=True)
+with tab_supply:
+    build_tab(
+        tab_name="Supply Chain",
+        sheet_keywords=["supply", "availability"],
+        id_col="Component" if "Component" in sheets else "Product",
+        default_metrics=["Component availability", "product availability"]
+    )
 
-        st.subheader("Product availability (proxy: service level)")
-        fin_kpi2 = st.selectbox("Financial KPI", ['ROI','Realized Revenues'], key='sc_fin2')
-        fig2 = px.scatter(prod_kpi, x='Product availability (%)', y=fin_kpi2,
-                          color='Product', hover_data=['Round'],
-                          title=f"Product availability vs {fin_kpi2}")
-        st.plotly_chart(fig2, use_container_width=True)
-
-# ---- Operations Tab ---- #
 with tab_ops:
-    st.header("Operations KPIs vs Financial Impact")
-    if warehouse_df.empty or product_df.empty:
-        st.warning("Required sheets not found.")
-    else:
-        wh_df = attach_financial(warehouse_df, fin_df)
-        prod_df = attach_financial(product_df, fin_df)
-        ops_kpis = {
-            'Inbound/Outbound Cube Utilization (%)': 'Cube utilization (%)',
-            'Production Plan Adherence (%)': 'Production plan adherence (%)'
-        }
-        section = st.selectbox("Select KPI", list(ops_kpis.keys()))
-        metric_col = ops_kpis[section]
-        fin_kpi = st.selectbox("Financial KPI", ['ROI','COGS'], key='ops_fin')
-        label_col = 'Warehouse' if metric_col == 'Cube utilization (%)' else 'Product'
-        dff = wh_df if metric_col == 'Cube utilization (%)' else prod_df
-        fig = px.scatter(
-            dff, x=metric_col, y=fin_kpi,
-            color=label_col, hover_data=['Round'],
-            title=f"{metric_col} vs {fin_kpi}")
-        st.plotly_chart(fig, use_container_width=True)
-        st.dataframe(dff[[label_col,'Round',metric_col,fin_kpi]])
+    build_tab(
+        tab_name="Operations",
+        sheet_keywords=["warehouse", "production", "operations"],
+        id_col="Area" if "Area" in sheets else "Product",
+        default_metrics=["Inbound Warehouse Cube Utilization", "Outbound Warehouse Cube Utilization", "Production Plan Adherence Percentage"]
+    )
 
-st.sidebar.success("✔️ Dashboard ready – choose KPIs in each tab!")
+st.caption("© Streamlit dashboard template by ChatGPT – Revised " + pd.Timestamp.utcnow().strftime('%Y-%m-%d'))
