@@ -1,5 +1,6 @@
-streamlit
-pandas
-plotly
-requests
-openpyxl
+
+streamlit>=1.34
+pandas>=2.2
+plotly>=5.20
+requests>=2.32
+openpyxl>=3.1
