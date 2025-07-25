@@ -1,0 +1,8 @@
+Bottling line,Round,Run time per week (hours),Changeover time per week (hours),Breakdown time per week (hours),Unused capacity per week (hours),Overtime per week (hours),Run time (%),Changeover time (%),Breakdown time (%),Unused capacity (%),Overtime (%),Start up productivity loss (value),Production plan adherence (%),Outsourced (hours),Outsourced (%)
+Swiss Fill 2,0,62.5896,12.1013,10.8484,3.9364,9.3928,0.7824,0.1513,0.1356,0.0492,0.1174,8434.9009,0.7872,0,0
+Swiss Fill 2,1,62.6741,12.2215,10.8638,3.8131,9.4885,0.7834,0.1528,0.1358,0.0477,0.1186,8456.856,0.8215,0,0
+Swiss Fill 2,2,61.3336,12.2342,10.6096,4.2207,8.3139,0.7667,0.1529,0.1326,0.0528,0.1039,8323.7946,0.8313,0,0
+Swiss Fill 2,3,54.4594,15.7726,9.4624,4.8852,4.5055,0.6807,0.1972,0.1183,0.0611,0.0563,17447.8735,0.8229,0,0
+Swiss Fill 2,4,54.0961,30.5602,9.4116,1.0574,15.0087,0.6762,0.382,0.1176,0.0132,0.1876,35519.049,0.8247,0,0
+Swiss Fill 2,5,55.4535,9.5084,4.658,13.53,3.1028,0.6932,0.1189,0.0582,0.1691,0.0388,8588.8913,0.897,0,0
+Swiss Fill 2,6,62.174,9.4532,3.929,10.4397,5.9464,0.7772,0.1182,0.0491,0.1305,0.0743,9396.6733,0.8708,0,0

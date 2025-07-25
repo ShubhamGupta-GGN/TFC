@@ -1,0 +1,74 @@
+Unnamed: 0,Round,Unnamed: 2,Unnamed: 3,Unnamed: 4,Unnamed: 5,Unnamed: 6,Unnamed: 7
+,0.0,1.0,2.0,3.0,4.0,5.0,6.0
+ROI,-0.0768,-0.0399,-0.0159,-0.1383,-0.1713,0.0092,-0.0261
+Realized revenue - Contracted sales revenue - Contracted sales revenue - Food & Groceries,1297902.347,1272163.0838,1285676.197,1281815.3075,1205240.9995,1205240.9995,1297902.347
+Realized revenue - Contracted sales revenue - Contracted sales revenue - LAND Market,632820.7696,632820.7696,634466.1694,656843.6069,619986.651,619986.651,646313.0481
+Realized revenue - Contracted sales revenue - Contracted sales revenue - Dominick's,698240.0321,705177.1011,708611.2937,704971.0496,695355.3104,695355.3104,704971.0496
+Realized revenue - Contracted sales revenue,2628963.1487,2610160.9545,2628753.6601,2643629.964,2520582.9609,2520582.9609,2649186.4447
+Realized revenue - Bonus or penalties - Contracted sales revenue - Food & Groceries,-252765.9987,-87969.8318,-110509.969,-386088.9481,-333314.4516,31689.4923,-11314.8953
+Realized revenue - Bonus or penalties - Contracted sales revenue - LAND Market,-46359.7801,-18917.5527,-32543.3649,-197447.978,-106782.2622,4647.0588,-17404.5889
+Realized revenue - Bonus or penalties - Contracted sales revenue - Dominick's,-23582.4716,-13680.4689,-63669.4613,-206051.5538,-131756.9133,2091.622,-2519.447
+Realized revenue - Bonus or penalties,-322708.2504,-120567.8534,-206722.7952,-789588.4799,-571853.6271,38428.1731,-31238.9312
+Realized revenue,2306254.8984,2489593.1012,2422030.865,1854041.4841,1948729.3338,2559011.1342,2617947.5135
+Gross margin - Cost of goods sold - Purchase value - Mono Packaging Materials,110691.8301,111244.1564,109905.575,107934.7932,106773.4339,,
+Gross margin - Cost of goods sold - Purchase value - Brit Pack,,,,,,109651.5825,121456.2778
+Gross margin - Cost of goods sold - Purchase value - Trio PET PLC,307931.2057,308746.3362,297578.9852,298249.0753,299165.87,,
+Gross margin - Cost of goods sold - Purchase value - Plantin PET,,,,,,273800.246,305351.966
+Gross margin - Cost of goods sold - Purchase value - Miami Oranges,409042.2309,404905.7015,396242.6607,388131.2926,381715.5369,396027.4097,443018.838
+Gross margin - Cost of goods sold - Purchase value - NO8DO Mango,81657.5009,81657.5009,79058.9648,86581.9852,85111.2449,,
+Gross margin - Cost of goods sold - Purchase value - Mossi Mango,,,,,,73092.754,83115.3752
+Gross margin - Cost of goods sold - Purchase value - Seitan Vitamins,2294.5504,2335.3291,2381.3976,2773.6327,2769.4176,2673.203,2863.1481
+Gross margin - Cost of goods sold - Purchase value,911617.318,908889.0241,885167.5833,883670.779,875535.5033,855245.1952,955805.6051
+Gross margin - Cost of goods sold - Production costs - Bottling lines fixed costs,49000.0,49000.0,49000.0,49000.0,49000.0,49000.0,49000.0
+Gross margin - Cost of goods sold - Production costs - Permanent employees,200000.0,200000.0,200000.0,200000.0,200000.0,200000.0,200000.0
+Gross margin - Cost of goods sold - Production costs - Flexible manpower,66670.3841,67349.1205,59012.257,31979.9416,106532.0814,22023.9048,42207.6803
+Gross margin - Cost of goods sold - Production costs - Mixer fixed costs,31250.0,31250.0,31250.0,31250.0,31250.0,31250.0,31250.0
+Gross margin - Cost of goods sold - Production costs - Mixer variable costs,144569.0506,144835.6329,142473.4177,166628.7342,213680.5063,141866.2025,155210.1266
+Gross margin - Cost of goods sold - Production costs,491489.4347,492434.7534,481735.6747,478858.6758,600462.5877,444140.1073,477667.8069
+Gross margin - Cost of goods sold,1403106.7528,1401323.7777,1366903.258,1362529.4548,1475998.0911,1299385.3025,1433473.412
+Gross margin,903148.1457,1088269.3235,1055127.6069,491512.0293,472731.2427,1259625.8316,1184474.1015
+Operating profit - Indirect cost - Overhead costs - Energy,150904.1046,151113.0082,147823.6564,144632.5331,143710.8503,147200.573,165059.1452
+Operating profit - Indirect cost - Overhead costs - Water,26778.9836,26779.537,26770.8795,50666.2994,99000.8188,26729.2089,26776.5037
+Operating profit - Indirect cost - Overhead costs - Other,146618.8945,146054.8286,146612.6098,147058.8989,143367.4888,143367.4888,147225.5933
+Operating profit - Indirect cost - Overhead costs,324301.9826,323947.3738,321207.1457,342357.7315,386079.158,317297.2708,339061.2422
+Operating profit - Indirect cost - Stock costs - Interest components,11180.6421,12304.0633,10252.8992,5219.3383,10170.5697,11138.6869,12475.0919
+Operating profit - Indirect cost - Stock costs - Interest products,12926.1946,13091.3055,11418.8135,5793.0965,8229.358,11256.7082,11071.3652
+Operating profit - Indirect cost - Stock costs - Interest on stock value,24106.8369,25395.3687,21671.7125,11012.4349,18399.9275,22395.3952,23546.4571
+Operating profit - Indirect cost - Stock costs - Pallet locations raw materials warehouse,90000.0,100000.0,65000.0,60000.0,100000.0,100000.0,90000.0
+Operating profit - Indirect cost - Stock costs - Overflow raw materials warehouse,35423.3318,58992.1781,36072.3455,1704.0415,1991.4283,14059.4956,51843.3676
+Operating profit - Indirect cost - Stock costs - Outsourcing tank yard,25281.5331,24806.1817,26584.1442,19404.4075,29641.7987,31120.7989,33379.48
+Operating profit - Indirect cost - Stock costs - Pallet locations finished goods warehouse,150000.0,110000.0,110000.0,75000.0,80000.0,80000.0,105000.0
+Operating profit - Indirect cost - Stock costs - Overflow finished goods warehouse,606.541,32643.4613,14283.6086,1255.5546,5613.6153,83123.613,9324.1419
+Operating profit - Indirect cost - Stock costs - Space,301311.4059,326441.8211,251940.0983,157364.0036,217246.8423,308303.9075,289546.9895
+Operating profit - Indirect cost - Stock costs - Costs of scrap,40203.2441,40861.2277,30011.5871,21117.9426,18595.8224,27669.7729,82858.5362
+Operating profit - Indirect cost - Stock costs - Risk,40203.2441,40861.2277,30011.5871,21117.9426,18595.8224,27669.7729,82858.5362
+Operating profit - Indirect cost - Stock costs,365621.4868,392698.4174,303623.3979,189494.381,254242.592,358369.0758,395951.9828
+Operating profit - Indirect cost - Handling costs - Inbound permanent employees,100000.0,100000.0,60000.0,60000.0,80000.0,80000.0,80000.0
+Operating profit - Indirect cost - Handling costs - Inbound flexible manpower,6752.5566,10598.4973,15586.1372,2160.4468,53.7934,7332.1817,20619.2386
+Operating profit - Indirect cost - Handling costs - Raw materials inspection,0.0,0.0,0.0,0.0,0.0,224.2,1713.1801
+Operating profit - Indirect cost - Handling costs - Inbound handling,106752.5566,110598.4973,75586.1372,62160.4468,80053.7934,87556.3817,102332.4187
+Operating profit - Indirect cost - Handling costs - Outbound permanent employees,80000.0,60000.0,80000.0,60000.0,60000.0,60000.0,80000.0
+Operating profit - Indirect cost - Handling costs - Outbound flexible manpower,3724.7564,31642.5439,8158.8743,9677.9486,5364.1992,41925.0354,11923.5858
+Operating profit - Indirect cost - Handling costs - Outbound handling,83724.7564,91642.5439,88158.8743,69677.9486,65364.1992,101925.0354,91923.5858
+Operating profit - Indirect cost - Handling costs,190477.313,202241.0412,163745.0115,131838.3954,145417.9926,189481.4171,194256.0045
+Operating profit - Indirect cost - Administration costs - Inbound order lines,270.6762,270.096,272.9971,515.8224,539.0315,404.4187,410.2209
+Operating profit - Indirect cost - Administration costs - Inbound orders,1353.3809,1350.4798,1364.9855,2579.1118,2695.1573,2022.0933,2051.1047
+Operating profit - Indirect cost - Administration costs - Contracted suppliers,100000.0,100000.0,100000.0,100000.0,100000.0,100000.0,100000.0
+Operating profit - Indirect cost - Administration costs - Inbound,101624.0571,101620.5758,101637.9826,103094.9342,103234.1888,102426.512,102461.3256
+Operating profit - Indirect cost - Administration costs - Outbound order lines,926.5075,926.5075,926.5075,926.5075,926.5075,926.5075,926.5075
+Operating profit - Indirect cost - Administration costs - Outbound orders,7166.5365,7166.5365,7166.5365,7166.5365,7166.5365,7166.5365,7166.5365
+Operating profit - Indirect cost - Administration costs - Outbound,8093.044,8093.044,8093.044,8093.044,8093.044,8093.044,8093.044
+Operating profit - Indirect cost - Administration costs,109717.1011,109713.6198,109731.0266,111187.9782,111327.2328,110519.556,110554.3696
+Operating profit - Indirect cost - Distribution costs,192114.4119,192114.4119,192114.4119,192114.4119,192114.4119,192114.4119,192114.4119
+Operating profit - Indirect cost - Project costs - Solve breakdowns training,0.0,0.0,0.0,0.0,0.0,4000.0,4000.0
+Operating profit - Indirect cost - Project costs - SMED,0.0,0.0,0.0,10000.0,10000.0,10000.0,10000.0
+Operating profit - Indirect cost - Project costs - Increase speed,0.0,0.0,0.0,15000.0,15000.0,15000.0,15000.0
+Operating profit - Indirect cost - Project costs,0.0,0.0,0.0,25000.0,25000.0,29000.0,29000.0
+Operating profit - Indirect cost - Interest,27419.158,27163.0372,27487.4117,27588.3967,26142.8679,26447.7483,27623.0707
+Operating profit - Indirect cost,1209651.4535,1247877.9012,1117908.4053,1019581.2948,1140324.2553,1223229.4797,1288561.0818
+Operating profit,-306503.3078,-159608.5777,-62780.7984,-528069.2654,-667593.0126,36396.3518,-104086.9803
+Investment - Investment - Fixed,2500000.0,2500000.0,2500000.0,2500000.0,2500000.0,2500000.0,2500000.0
+Investment - Investment - Stock,321424.4914,338604.9164,288956.167,146832.4651,245332.3671,298605.2697,313952.7616
+Investment - Investment - Machines,802500.0,802500.0,802500.0,802500.0,802500.0,802500.0,802500.0
+Investment - Investment - Payment terms,365588.7736,362173.8294,366498.8224,367845.2895,348571.5724,352636.6434,368307.6096
+Investment,3989513.265,4003278.7458,3957954.9894,3817177.7547,3896403.9395,3953741.913,3984760.3712
