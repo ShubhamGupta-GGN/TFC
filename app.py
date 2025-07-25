@@ -6,7 +6,7 @@ import seaborn as sns
 # Load from GitHub repo
 @st.cache_data
 def load_data():
-    url = "https://raw.githubusercontent.com/<your-username>/<repo-name>/main/TFC_0_6.xlsx"
+    url = "https://raw.githubusercontent.com/shubhamgpta/TFC-Dashboard/main/TFC_0_6.xlsx"
     sheets = pd.read_excel(url, sheet_name=None)
     return sheets
 
