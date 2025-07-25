@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 # GitHub raw URL base - replace with your repo's raw path
-base_url = "https://github.com/ShubhamGupta-GGN/TFC/tree/bf6dfe1560b3d6aa81d2d8256e9cfe48acdc5350/data"
+base_url = "https://github.com/ShubhamGupta-GGN/TFC/raw/refs/heads/main/data/"
 
 # Load all datasets
 @st.cache_data
