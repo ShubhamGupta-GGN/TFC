@@ -1,68 +1,79 @@
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+import plotly.express as px
 
-# Load from GitHub repo
+# GitHub raw URL base - replace with your repo's raw path
+base_url = "https://raw.githubusercontent.com/yourusername/your-repo/main/data/"
+
+# Load all datasets
 @st.cache_data
 def load_data():
-    url = "https://github.com/ShubhamGupta-GGN/TFC/raw/refs/heads/main/TFC_0_6.xlsx"
-    sheets = pd.read_excel(url, sheet_name=None)
-    return sheets
+    return {
+        "finance": pd.read_csv(base_url + "finance_report.csv"),
+        "supplier": pd.read_csv(base_url + "supplier.csv"),
+        "product": pd.read_csv(base_url + "product.csv"),
+        "customer": pd.read_csv(base_url + "customer.csv"),
+        "component": pd.read_csv(base_url + "component.csv"),
+        "supplier_component": pd.read_csv(base_url + "supplier_component.csv"),
+        "warehouse": pd.read_csv(base_url + "warehouse.csv"),
+        "bottling": pd.read_csv(base_url + "bottling_line.csv"),
+        "mixers": pd.read_csv(base_url + "mixers.csv")
+    }
 
-sheets = load_data()
-finance_df = sheets['finance report']
+data = load_data()
 
-# Extract financial KPIs
-rounds = list(range(1, 7))
-roi = finance_df.iloc[1, 1:8].tolist()
-revenue = finance_df.iloc[2, 1:8].tolist()
-cogs = finance_df.iloc[3, 1:8].tolist()
-indirect_costs = finance_df.iloc[4, 1:8].tolist()
+st.set_page_config(page_title="The Fresh Connection Dashboard", layout="wide")
+st.title("📊 The Fresh Connection KPI Dashboard")
 
-# Create sidebar
-st.sidebar.title("The Fresh Connection - Dashboard")
-tab = st.sidebar.radio("Select Functional Area", ["Purchase", "Sales", "Supply Chain", "Operations"])
+tab1, tab2, tab3, tab4 = st.tabs(["🛒 Purchase", "🧾 Sales", "📦 Supply Chain", "🏭 Operations"])
 
-# Shared financial KPI chart
-def financial_kpi_chart():
-    st.subheader("Financial KPI Overview (Rounds 1-6)")
-    fig, ax = plt.subplots()
-    ax.plot(rounds, roi, marker='o', label="ROI")
-    ax.plot(rounds, revenue, marker='s', label="Revenue")
-    ax.plot(rounds, cogs, marker='^', label="COGS")
-    ax.plot(rounds, indirect_costs, marker='x', label="Indirect Costs")
-    ax.set_xlabel("Round")
-    ax.set_ylabel("Value")
-    ax.legend()
-    st.pyplot(fig)
+with tab1:
+    st.header("Purchase KPIs and Financial Impact")
+    supplier_df = data["supplier"]
+    st.subheader("Component Delivery Reliability by Round")
+    fig1 = px.line(supplier_df, x="Round", y="Delivery reliability (%)", color="Supplier", markers=True)
+    st.plotly_chart(fig1, use_container_width=True)
 
-# Tab-specific content
-if tab == "Purchase":
-    st.title("Purchase KPIs")
-    purchase_df = sheets["Supplier - Component"]
-    st.line_chart(purchase_df.pivot(index="Round", columns="Supplier", values="Rejection (%)"))
-    st.line_chart(purchase_df.pivot(index="Round", columns="Supplier", values="Order size"))
-    financial_kpi_chart()
+    st.subheader("Component Rejection % by Round")
+    fig2 = px.line(supplier_df, x="Round", y="Rejection  (%)", color="Supplier", markers=True)
+    st.plotly_chart(fig2, use_container_width=True)
 
-elif tab == "Sales":
-    st.title("Sales KPIs")
-    sales_df = sheets["Customer"]
-    st.line_chart(sales_df.pivot(index="Round", columns="Customer", values="Service level (pieces)"))
-    st.line_chart(sales_df.pivot(index="Round", columns="Customer", values="Attained shelf life (%)"))
-    financial_kpi_chart()
+with tab2:
+    st.header("Sales KPIs and Financial Impact")
+    product_df = data["product"]
+    customer_df = data["customer"]
 
-elif tab == "Supply Chain":
-    st.title("Supply Chain KPIs")
-    product_df = sheets["Product"]
-    st.line_chart(product_df.pivot(index="Round", columns="Product", values="Service level (pieces)"))
-    st.line_chart(product_df.pivot(index="Round", columns="Product", values="Economic inventory (weeks)"))
-    financial_kpi_chart()
+    st.subheader("Forecast Error (MAPE) by Product")
+    fig3 = px.line(product_df, x="Round", y="Forecast error (MAPE)", color="Product", markers=True)
+    st.plotly_chart(fig3, use_container_width=True)
 
-elif tab == "Operations":
-    st.title("Operations KPIs")
-    bottling_df = sheets["Bottling line"]
-    st.line_chart(bottling_df.pivot(index="Round", columns="Bottling line", values="Production plan adherence (%)"))
-    wh_df = sheets["Warehouse, Salesarea"]
-    st.line_chart(wh_df.pivot(index="Round", columns="Warehouse", values="Cube utilization (%)"))
-    financial_kpi_chart()
+    st.subheader("Service Level (pieces) by Customer")
+    fig4 = px.line(customer_df, x="Round", y="Service level (pieces)", color="Customer", markers=True)
+    st.plotly_chart(fig4, use_container_width=True)
+
+with tab3:
+    st.header("Supply Chain KPIs and Financial Impact")
+    component_df = data["component"]
+    product_df = data["product"]
+
+    st.subheader("Component Availability by Round")
+    fig5 = px.line(component_df, x="Round", y="Component availability (%)", color="Component", markers=True)
+    st.plotly_chart(fig5, use_container_width=True)
+
+    st.subheader("Product Availability (OSA) by Round")
+    fig6 = px.line(product_df, x="Round", y="OSA", color="Product", markers=True)
+    st.plotly_chart(fig6, use_container_width=True)
+
+with tab4:
+    st.header("Operations KPIs and Financial Impact")
+    warehouse_df = data["warehouse"]
+    bottling_df = data["bottling"]
+
+    st.subheader("Inbound Warehouse Cube Utilization")
+    inbound_df = warehouse_df[warehouse_df["Warehouse"] == "Raw materials warehouse"]
+    fig7 = px.line(inbound_df, x="Round", y="Cube utilization (%)", markers=True)
+    st.plotly_chart(fig7, use_container_width=True)
+
+    st.subheader("Production Plan Adherence (%)")
+    fig8 = px.line(bottling_df, x="Round", y="Production plan adherence (%)", color="Bottling line", markers=True)
+    st.plotly_chart(fig8, use_container_width=True)
